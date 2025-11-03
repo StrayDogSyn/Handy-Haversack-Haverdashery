@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import random
 from typing import List
+from contextlib import asynccontextmanager
 
 from database import get_db, init_db, Character, Monster
 from schemas import (
@@ -14,20 +15,10 @@ from schemas import (
     EncounterResponse,
 )
 
-app = FastAPI(title="Pathfinder TTRPG Companion")
 
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
     init_db()
     # Seed some sample monsters
     db = next(get_db())
@@ -46,6 +37,20 @@ def on_startup():
             db.add(monster)
         db.commit()
     db.close()
+    yield
+    # Shutdown (cleanup if needed)
+
+
+app = FastAPI(title="Pathfinder TTRPG Companion", lifespan=lifespan)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Character endpoints

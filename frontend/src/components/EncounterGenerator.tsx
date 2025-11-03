@@ -146,7 +146,7 @@ const EncounterGenerator: React.FC = () => {
                 {result.monsters.map((monster, index) => (
                   <div
                     key={`${monster.id}-${index}`}
-                    className="bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition-colors"
+                    className="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors"
                   >
                     <div className="flex justify-between items-start">
                       <div>
