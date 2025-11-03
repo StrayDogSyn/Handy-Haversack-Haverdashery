@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/frontend/node_modules
 
 # testing
 /coverage
@@ -14,6 +15,7 @@
 
 # production
 /build
+/frontend/build
 
 # misc
 .DS_Store
@@ -34,3 +36,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+backend/venv/
+backend/env/
+
+# SQLite
+*.db
+*.db-journal
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
