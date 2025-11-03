@@ -1,4 +1,5 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Handy Haversack Haverdashery - Pathfinder 2e Companion App
+# .gitignore for Python/FastAPI backend + React/TypeScript frontend
 
 # dependencies
 /node_modules
@@ -6,32 +7,116 @@
 .pnp.js
 /frontend/node_modules
 
-# testing
-/coverage
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 
-# next.js
-/.next/
-/out/
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
 # production
 /build
 /frontend/build
 
-# misc
-.DS_Store
-*.pem
+# Unit test / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
 
-# debug
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===================================
+# Node.js / Frontend
+# ===================================
+# Dependencies
+node_modules/
+frontend/node_modules/
+/.pnp
+.pnp.js
+
+# Production builds
+/build
+/dist
+frontend/dist/
+frontend/build/
+
+# Testing
+/coverage
+frontend/coverage/
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# local env files
-.env*.local
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vite
+.vite/
+
+# ===================================
+# Environment Variables
+# ===================================
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+backend/.env
+frontend/.env
 
-# vercel
-.vercel
+# ===================================
+# Database Files
+# ===================================
+*.db
+*.sqlite
+*.sqlite3
+backend/data/sqlite/*.db
+backend/data/sqlite/*.sqlite
+backend/data/sqlite/*.sqlite3
 
 # typescript
 *.tsbuildinfo
