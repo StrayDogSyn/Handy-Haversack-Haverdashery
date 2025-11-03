@@ -1,16 +1,11 @@
 # Handy Haversack Haverdashery - Pathfinder 2e Companion App
 # .gitignore for Python/FastAPI backend + React/TypeScript frontend
 
-# ===================================
-# Python / Backend
-# ===================================
-# Virtual environments
-venv/
-env/
-ENV/
-.venv
-backend/venv/
-backend/env/
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+/frontend/node_modules
 
 # Python cache
 __pycache__/
@@ -39,9 +34,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
+# production
+/build
+/frontend/build
 
 # Unit test / coverage
 .pytest_cache/
@@ -123,43 +118,28 @@ backend/data/sqlite/*.db
 backend/data/sqlite/*.sqlite
 backend/data/sqlite/*.sqlite3
 
-# But keep .gitkeep files
-!backend/data/**/.gitkeep
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# ===================================
-# PDF and JSON Data (optional)
-# ===================================
-# Uncomment if you don't want to track PDFs/JSON in git
-# backend/data/pdfs/**
-# backend/data/json/**
-# But always keep .gitkeep
-!backend/data/pdfs/.gitkeep
-!backend/data/json/.gitkeep
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+backend/venv/
+backend/env/
 
-# ===================================
-# Build Artifacts
-# ===================================
-*.tar.gz
-*.zip
-*.bak
-*.tmp
-*.temp
+# SQLite
+*.db
+*.db-journal
 
-# ===================================
-# OS-Specific
-# ===================================
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-Desktop.ini
-
-# ===================================
-# Misc
-# ===================================
-*.pem
-*.log
-.vercel
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

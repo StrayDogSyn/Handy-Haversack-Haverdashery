@@ -1,180 +1,190 @@
-import { useState } from 'react'
-import axios from 'axios'
+import React, { useState } from 'react';
+import { diceApi, DiceRollResult } from '../services/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const DiceRoller: React.FC = () => {
+  const [diceType, setDiceType] = useState<number>(20);
+  const [numDice, setNumDice] = useState<number>(1);
+  const [modifier, setModifier] = useState<number>(0);
+  const [result, setResult] = useState<DiceRollResult | null>(null);
+  const [rolling, setRolling] = useState(false);
 
-interface DiceRoll {
-  notation: string
-  rolls?: number[]
-  modifier?: number
-  total?: number
-  result?: number
-  type?: string
-}
+  const diceTypes = [4, 6, 8, 10, 12, 20, 100];
 
-function DiceRoller() {
-  const [notation, setNotation] = useState('2d6')
-  const [result, setResult] = useState<DiceRoll | null>(null)
-  const [history, setHistory] = useState<DiceRoll[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const rollDice = async () => {
-    setLoading(true)
-    setError(null)
+  const handleRoll = async () => {
+    setRolling(true);
     try {
-      const response = await axios.post(`${API_URL}/dice/roll`, {
-        notation: notation
-      })
-      setResult(response.data)
-      // Add to history
-      setHistory(prev => [response.data, ...prev].slice(0, 10))
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to roll dice')
+      const rollResult = await diceApi.roll({
+        dice_type: diceType,
+        num_dice: numDice,
+        modifier: modifier,
+      });
+      setResult(rollResult);
+    } catch (error) {
+      console.error('Error rolling dice:', error);
     } finally {
-      setLoading(false)
+      setTimeout(() => setRolling(false), 500);
     }
-  }
+  };
 
-  const rollAdvantage = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await axios.post(`${API_URL}/dice/roll/advantage`)
-      setResult(response.data)
-      setHistory(prev => [response.data, ...prev].slice(0, 10))
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to roll with advantage')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const rollDisadvantage = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await axios.post(`${API_URL}/dice/roll/disadvantage`)
-      setResult(response.data)
-      setHistory(prev => [response.data, ...prev].slice(0, 10))
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to roll with disadvantage')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const quickRoll = (dice: string) => {
-    setNotation(dice)
-    setTimeout(() => {
-      rollDice()
-    }, 100)
-  }
+  const getDiceIcon = (type: number): string => {
+    const icons: { [key: number]: string } = {
+      4: '⬥',
+      6: '⬢',
+      8: '◆',
+      10: '◇',
+      12: '◉',
+      20: '◈',
+      100: '◎',
+    };
+    return icons[type] || '●';
+  };
 
   return (
-    <div className="space-y-4">
-      {/* Input Section */}
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={notation}
-          onChange={(e) => setNotation(e.target.value)}
-          placeholder="e.g., 2d6+3"
-          className="flex-1 px-4 py-2 bg-slate-600 text-white rounded border border-slate-500 focus:border-pathfinder-gold focus:outline-none"
-          onKeyPress={(e) => e.key === 'Enter' && rollDice()}
-        />
-        <button
-          onClick={rollDice}
-          disabled={loading}
-          className="px-6 py-2 bg-pathfinder-red hover:bg-pathfinder-darkred text-pathfinder-gold font-bold rounded transition disabled:opacity-50"
-        >
-          {loading ? '...' : 'Roll'}
-        </button>
-      </div>
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-amber-400">Dice Roller</h2>
 
-      {/* Quick Roll Buttons */}
-      <div className="flex flex-wrap gap-2">
-        {['1d20', '1d12', '1d10', '1d8', '1d6', '1d4'].map(dice => (
-          <button
-            key={dice}
-            onClick={() => quickRoll(dice)}
-            className="px-3 py-1 bg-slate-600 hover:bg-slate-500 text-white rounded text-sm transition"
-          >
-            {dice}
-          </button>
-        ))}
-      </div>
-
-      {/* Advantage/Disadvantage */}
-      <div className="flex gap-2">
-        <button
-          onClick={rollAdvantage}
-          disabled={loading}
-          className="flex-1 px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded transition disabled:opacity-50"
-        >
-          Advantage
-        </button>
-        <button
-          onClick={rollDisadvantage}
-          disabled={loading}
-          className="flex-1 px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded transition disabled:opacity-50"
-        >
-          Disadvantage
-        </button>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <div className="p-3 bg-red-900 border border-red-700 rounded text-red-200">
-          {error}
-        </div>
-      )}
-
-      {/* Result Display */}
-      {result && (
-        <div className="p-6 bg-slate-800 rounded-lg border-2 border-pathfinder-gold">
-          <div className="text-center">
-            <div className="text-pathfinder-lightgold font-bold mb-2">
-              {result.notation}
-            </div>
-            {result.rolls && (
-              <div className="text-gray-400 mb-2">
-                Rolls: {result.rolls.join(', ')}
-                {result.modifier !== undefined && result.modifier !== 0 && (
-                  <span> ({result.modifier > 0 ? '+' : ''}{result.modifier})</span>
-                )}
-              </div>
-            )}
-            <div className="text-5xl font-bold text-pathfinder-gold">
-              {result.total !== undefined ? result.total : result.result}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* History */}
-      {history.length > 0 && (
+      <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+        {/* Dice Selection */}
         <div>
-          <h3 className="text-lg font-bold text-pathfinder-lightgold mb-2">
-            Recent Rolls
-          </h3>
-          <div className="space-y-1 max-h-48 overflow-y-auto">
-            {history.map((roll, idx) => (
-              <div
-                key={idx}
-                className="px-3 py-2 bg-slate-600 rounded text-sm flex justify-between items-center"
+          <label className="block text-sm font-medium mb-2">Dice Type</label>
+          <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
+            {diceTypes.map((type) => (
+              <button
+                key={type}
+                onClick={() => setDiceType(type)}
+                className={`p-4 rounded-lg transition-all ${
+                  diceType === type
+                    ? 'bg-amber-600 text-white scale-105 shadow-lg'
+                    : 'bg-gray-700 hover:bg-gray-600'
+                }`}
               >
-                <span className="text-gray-300">{roll.notation}</span>
-                <span className="text-pathfinder-gold font-bold">
-                  {roll.total !== undefined ? roll.total : roll.result}
-                </span>
-              </div>
+                <div className="text-2xl">{getDiceIcon(type)}</div>
+                <div className="text-sm font-semibold">d{type}</div>
+              </button>
             ))}
           </div>
         </div>
-      )}
-    </div>
-  )
-}
 
-export default DiceRoller
+        {/* Number of Dice */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Number of Dice</label>
+          <div className="flex items-center gap-4">
+            <input
+              type="range"
+              min="1"
+              max="20"
+              value={numDice}
+              onChange={(e) => setNumDice(parseInt(e.target.value))}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              min="1"
+              max="100"
+              value={numDice}
+              onChange={(e) => setNumDice(parseInt(e.target.value))}
+              className="w-20 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-center"
+            />
+          </div>
+        </div>
+
+        {/* Modifier */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Modifier</label>
+          <div className="flex items-center gap-4">
+            <input
+              type="range"
+              min="-10"
+              max="10"
+              value={modifier}
+              onChange={(e) => setModifier(parseInt(e.target.value))}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              min="-100"
+              max="100"
+              value={modifier}
+              onChange={(e) => setModifier(parseInt(e.target.value))}
+              className="w-20 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-center"
+            />
+          </div>
+        </div>
+
+        {/* Roll Summary */}
+        <div className="bg-gray-700 rounded-lg p-4 text-center">
+          <div className="text-lg font-semibold">
+            Rolling: {numDice}d{diceType}
+            {modifier !== 0 && (
+              <span className="text-amber-400">
+                {' '}
+                {modifier > 0 ? '+' : ''}
+                {modifier}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Roll Button */}
+        <button
+          onClick={handleRoll}
+          disabled={rolling}
+          className={`w-full py-4 rounded-lg font-bold text-xl transition-all ${
+            rolling
+              ? 'bg-gray-600 cursor-not-allowed'
+              : 'bg-amber-600 hover:bg-amber-700 hover:scale-105 shadow-lg'
+          }`}
+        >
+          {rolling ? '🎲 Rolling...' : '🎲 Roll Dice'}
+        </button>
+
+        {/* Result Display */}
+        {result && (
+          <div className="space-y-4 pt-4 border-t border-gray-700">
+            <div className="text-center">
+              <div className="text-sm text-gray-400 mb-2">Individual Rolls</div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {result.rolls.map((roll, index) => (
+                  <div
+                    key={index}
+                    className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg ${
+                      roll === diceType
+                        ? 'bg-green-600 text-white'
+                        : roll === 1
+                        ? 'bg-red-600 text-white'
+                        : 'bg-gray-700'
+                    }`}
+                  >
+                    {roll}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-700 rounded-lg p-6 space-y-2">
+              <div className="flex justify-between text-lg">
+                <span className="text-gray-400">Dice Total:</span>
+                <span className="font-bold">{result.total}</span>
+              </div>
+              {result.modifier !== 0 && (
+                <div className="flex justify-between text-lg">
+                  <span className="text-gray-400">Modifier:</span>
+                  <span className="font-bold text-amber-400">
+                    {result.modifier > 0 ? '+' : ''}
+                    {result.modifier}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between text-2xl font-bold pt-2 border-t border-gray-600">
+                <span className="text-amber-400">Final Result:</span>
+                <span className="text-amber-400">{result.result}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default DiceRoller;
