@@ -46,6 +46,15 @@ Task breakdown for both developers:
 - Dependencies between tasks
 - Acceptance criteria
 
+### [PHASE_1_IMPLEMENTATION_GUIDE.md](PHASE_1_IMPLEMENTATION_GUIDE.md) 🆕
+**Technical deep-dive for Phase 1 features:**
+- Advanced dice mechanics (d3, crits/fumbles, macros)
+- Interactive character sheet with live calculations
+- Initiative tracker system
+- Code examples and best practices
+- Common pitfalls and solutions
+- Testing strategies
+
 ---
 
 ## 📖 Quick References
@@ -140,6 +149,9 @@ Handy-Haversack-Haverdashery/
 ### "What should I build next?"
 → [INITIAL_TASKS.md](INITIAL_TASKS.md)
 
+### "How do I implement Phase 1 features?"
+→ [PHASE_1_IMPLEMENTATION_GUIDE.md](PHASE_1_IMPLEMENTATION_GUIDE.md)
+
 ### "How does this work?"
 → [ARCHITECTURE.md](ARCHITECTURE.md)
 
@@ -180,11 +192,11 @@ No need for separate documentation PRs unless it's a major rewrite.
 
 ## 📊 Documentation Stats
 
-- **Total docs**: 6 files
-- **Total lines**: ~2000+
-- **Code examples**: 50+
+- **Total docs**: 8 files (including roadmap)
+- **Total lines**: ~3500+
+- **Code examples**: 100+
 - **Diagrams**: 3
-- **Coverage**: All major features
+- **Coverage**: All major features + implementation guides
 
 ---
 
